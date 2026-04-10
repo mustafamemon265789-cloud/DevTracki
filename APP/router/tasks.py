@@ -8,7 +8,6 @@ from app.database import get_session
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
-
 @router.get("/{task_id}", response_model=TaskRead)
 def get_task(
     task_id: int,
@@ -39,19 +38,14 @@ def update_task(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
-    """Update task status or details - assignee or owner can update"""
     task = session.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    # Get project for ownership check
     project = session.get(Project, task.project_id)
-
-    # Only owner or assignee can update
     if current_user.id != project.owner_id and current_user.id != task.assignee_id:
         raise HTTPException(status_code=403, detail="Not authorized to update this task")
-
-    # Update only provided fields
+        
     if title is not None:
         task.title = title
     if description is not None:
@@ -75,7 +69,6 @@ def delete_task(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
-    """Delete a task - only owner or assignee can delete"""
     task = session.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -120,7 +113,6 @@ def list_comments(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
-    """List all comments on a task"""
     task = session.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
