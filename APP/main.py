@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Depends
-from app.database import create_db_and_tables
 from app.models.user import User, UserRead
 from app.models.project import Project
 from app.models.task import Task, Comment
@@ -17,7 +16,7 @@ app.include_router(tasks.router)
 
 @app.on_event("startup")
 def on_startup():
-    create_db_and_tables()
+    #for db create_tables
     print("Tables Created Successfully")
 
 @app.get("/")
