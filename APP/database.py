@@ -1,11 +1,14 @@
-from sqlmodel import SQLModel, create_engine, Session
-from APP.config import settings
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-engine = create_engine(settings.database_url, echo=True)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///devtrack.db")
 
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+# Railway fix
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-def get_session():
-    with Session(engine) as session:
-        yield session
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
