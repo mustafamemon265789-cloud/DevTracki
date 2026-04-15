@@ -1,11 +1,8 @@
-[build]
-apt_packages = ["gcc", "libpq-dev", "python3-dev"]
+[phases.setup]
+nixpkgs = ["python312", "gcc", "libpq-dev", "postgresql"]
 
 [phases.build]
 cmds = [
     "pip install uv",
-    "uv sync --frozen"
+    "uv sync --frozen || pip install -e ."
 ]
-
-[phases.setup]
-nixpkgs = ["python312", "gcc", "postgresql"]
